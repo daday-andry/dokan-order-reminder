@@ -77,7 +77,6 @@ class Dokan_Order_Reminder {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-		$this->define_public_hooks();
 
 	}
 
@@ -89,7 +88,6 @@ class Dokan_Order_Reminder {
 	 * - Dokan_Order_Reminder_Loader. Orchestrates the hooks of the plugin.
 	 * - Dokan_Order_Reminder_i18n. Defines internationalization functionality.
 	 * - Dokan_Order_Reminder_Admin. Defines all hooks for the admin area.
-	 * - Dokan_Order_Reminder_Public. Defines all hooks for the public side of the site.
 	 *
 	 * Create an instance of the loader which will be used to register the hooks
 	 * with WordPress.
@@ -115,12 +113,6 @@ class Dokan_Order_Reminder {
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-dokan-order-reminder-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-dokan-order-reminder-public.php';
 
 		$this->loader = new Dokan_Order_Reminder_Loader();
 
@@ -153,27 +145,9 @@ class Dokan_Order_Reminder {
 	private function define_admin_hooks() {
 
 		$plugin_admin = new Dokan_Order_Reminder_Admin( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		
 		$this->loader->add_filter( 'dokan_settings_sections', $plugin_admin, 'settings_sections');
 		$this->loader->add_filter( 'dokan_settings_fields', $plugin_admin, 'settings_fields');
-	}
-
-	/**
-	 * Register all of the hooks related to the public-facing functionality
-	 * of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function define_public_hooks() {
-
-		$plugin_public = new Dokan_Order_Reminder_Public( $this->get_plugin_name(), $this->get_version() );
-
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 	}
 
 	/**
