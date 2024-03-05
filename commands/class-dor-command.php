@@ -26,17 +26,26 @@ class DOR_Command extends WP_CLI_Command {
             );
             
             wp_mail($vendor_email, $reminder_subject, $message, 'Content-Type: text/html; charset=UTF-8' );
+            
+            foreach ($data['orders'] as $order){
+                $order->update_meta_data('vendor_reminder_reminded_at',  time());
+                $order->save();
+            }
+            
         }
 
         WP_CLI::success( 'Commande exécutée avec succès depuis mon plugin' );
     }
 
     private function get_pending_orders_since($time){
-        $data =  wc_get_orders( array(
+        $data =  wc_get_orders( [
             'limit'        => -1,
             'status'       => 'pending',
             'date_created' => '<' . $time,
-        ));
+            'meta_key'     => 'vendor_reminder_reminded_at',
+            'meta_value'   => '',
+            'meta_compare' => 'NOT EXISTS'    
+        ]);
 
         return $this->group_order_by_seller($data);
     }
@@ -51,12 +60,12 @@ class DOR_Command extends WP_CLI_Command {
                 $email             = $vendor->get_email();
                 
                 if($_array[$email] ?? false){
-                    $_array[$email]['orders'][]  = $order->get_id();
+                    $_array[$email]['orders'][]  = $order;
                     continue;
                 }
 
                 $_array[$email] = [
-                    "orders"       => [$order->get_id()],
+                    "orders"       => [$order],
                     "vendor_name"  => $vendor->get_name()
                 ];
             }

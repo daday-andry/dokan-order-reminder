@@ -30,7 +30,7 @@ class Dokan_Order_Reminder_Activator {
 	 * @since    1.0.0
 	 */
 	public static function activate() {
-		if(!function_exists('WeDevs_Dokan' ) ) {
+		if(!class_exists('WeDevs_Dokan' ) ) {
 			die("Please, enable dokan plugin first");
 		}
 	}
